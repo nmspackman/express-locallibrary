@@ -205,7 +205,10 @@ function createBookInstances(cb) {
         cb);
 }
 
-
+db.dropDatabase(function(err, data) {
+  if (err) { console.log(`Drop db error ${err}`); }
+  console.log('Successfully dropped db!');
+})
 
 async.series([
     createGenreAuthors,

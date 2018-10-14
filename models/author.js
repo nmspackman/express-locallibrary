@@ -1,9 +1,10 @@
+let moment = require('moment');
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let AuthorSchema = new Schema(
   {
-    first: {type: String, require: true, max: 100},
+    first_name: {type: String, require: true, max: 100},
     family_name: {type: String, required: true, max: 100},
     date_of_birth: {type: Date},
     date_of_death: {type: Date},
@@ -12,20 +13,34 @@ let AuthorSchema = new Schema(
 
 AuthorSchema
 .virtual('name')
-.get(() => {
+.get(function() {
   return `${this.family_name}, ${this.first_name}`;
 });
 
 AuthorSchema
-.virtual('lifespan')
-.get(() => {
-  return (this.date_of_death.getYear() - this.date_of_birth.getYear()).toString();
+.virtual('url')
+.get(function() {
+  return `/catalog/author/${this._id}`;
 });
 
 AuthorSchema
-.virtual('url')
-.get(() => {
-  return `/catalog/author/${this._id}`;
-})
+.virtual('date_of_birth_formatted')
+.get(function() {
+  return this.date_of_birth ? moment(this.date_of_birth).format('MMMM Do, YYYY') : '';
+});
+
+AuthorSchema
+.virtual('date_of_death_formatted')
+.get(function() {
+  return this.date_of_death ? moment(this.date_of_death).format('MMMM Do, YYYY') : '';
+});
+
+AuthorSchema
+.virtual('lifespan')
+.get(function() {
+  let dob = this.date_of_birth ? moment(this.date_of_birth).format('MMMM Do, YYYY') : '';
+  let dod = this.date_of_death ? moment(this.date_of_death).format('MMMM Do, YYYY') : '';
+  return dob || dod ? `${dob} - ${dod}` : ''
+});
 
 module.exports = mongoose.model('Author', AuthorSchema);
