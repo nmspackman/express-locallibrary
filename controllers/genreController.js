@@ -39,8 +39,8 @@ exports.genre_create_get = function(req, res) {
 };
 
 exports.genre_create_post = [
-  body('name', 'Genre name required.').isLength({ min: 1}).trim(),
-  body('name','Only letters permitted.').isAlpha(),
+  body('name', 'Genre name required.').isLength({ min: 1}).trim()
+    .isAlpha().withMessage('Only letters permitted.'),
   sanitizeBody('name').trim().escape(),
   (req, res, next) => {
     const errors = validationResult(req);
